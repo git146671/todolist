@@ -4,6 +4,7 @@ import {TaskType, Todolist} from "./Todolist";
 import {v1} from "uuid";
 
 export type FilterValuesType = "all" | "active" | "completed";
+
 function App() {
 
     let [tasks, setTasks] = useState<Array<TaskType>>([
@@ -26,6 +27,7 @@ function App() {
     function changeFilter(value: FilterValuesType) {
         setFilter(value);
     }
+
     function removeTask(id: string) {
         let newTasks = tasks.filter((t) => t.id !== id);
         setTasks(newTasks);
@@ -36,11 +38,27 @@ function App() {
         setTasks([newTask, ...tasks]);
     }
 
+    function changeStatus(taskId: string) {
+        let task = tasks.find(t => t.id === taskId);
+        if (task) {
+            task.isDone = !task.isDone;
+        }
+        setTasks([... tasks]);
+    }
+
     return (
         <div className="App">
-            <Todolist title="What to learn" tasks={tasksForTodoList} removeTask={removeTask} changeFilter={changeFilter} addTask={addTask}/>
+            <Todolist title="What to learn"
+                      tasks={tasksForTodoList}
+                      removeTask={removeTask}
+                      changeFilter={changeFilter}
+                      addTask={addTask}
+                      changeStatus={changeStatus}
+                      filter={filter}/>
+            {typeof useState}
         </div>
     );
+
 }
 
 export default App;
