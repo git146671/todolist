@@ -55,7 +55,6 @@ function App() {
                       addTask={addTask}
                       changeStatus={changeStatus}
                       filter={filter}/>
-            {typeof useState}
         </div>
     );
 
