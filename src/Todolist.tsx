@@ -9,12 +9,14 @@ export type TaskType = {
     isDone: boolean;
 }
 type TodolistPropsType = {
+    id: string
     title: string;
     tasks: Array<TaskType>;
-    removeTask: (id: string) => void; // эта функция является колбэком и пробрасывается от родителя чтобы вызвать ее отсюда и там изменить состояние
-    changeFilter: (value: FilterValuesType) => void; // эта функция является колбэком и пробрасывается от родителя чтобы вызвать ее отсюда и там изменить состояние
-    addTask: (newTitle: string) => void;
-    changeStatus: (id: string) => void;
+    removeTask: (id: string, tlId: string) => void; // эта функция является колбэком и пробрасывается от родителя чтобы вызвать ее отсюда и там изменить состояние
+    changeFilter: (value: FilterValuesType, tdListId: string) => void; // эта функция является колбэком и пробрасывается от родителя чтобы вызвать ее отсюда и там изменить состояние
+    addTask: (newTitle: string, tlId: string) => void;
+    changeStatus: (id: string, tlId: string) => void;
+    removeTdList: (tlId: string) => void;
     filter: FilterValuesType;
 }
 
@@ -34,7 +36,7 @@ export let Todolist = (props: TodolistPropsType) => {
         setError(null);
         if (e.key === "Enter") {
             if (newTaskTitle.trim() !== "") {
-                props.addTask(newTaskTitle);
+                props.addTask(newTaskTitle, props.id);
                 setNewTaskTitle("");
             } else {
                 setError("Field is required");
@@ -44,48 +46,57 @@ export let Todolist = (props: TodolistPropsType) => {
 
     const onAddTaskClickBtn = () => {
         if (newTaskTitle.trim() !== "") {
-            props.addTask(newTaskTitle);
+            props.addTask(newTaskTitle, props.id);
             setNewTaskTitle("");
         } else {
             setError("Field is required");
         }
     }
 
-    const onClickChangeFilterAll = () => props.changeFilter("all");
-    const onClickChangeFilterActive = () => props.changeFilter("active");
-    const onClickChangeFilterCompleted = () => props.changeFilter("completed");
+    const onClickChangeFilterAll = () => props.changeFilter("all", props.id);
+    const onClickChangeFilterActive = () => props.changeFilter("active", props.id);
+    const onClickChangeFilterCompleted = () => props.changeFilter("completed", props.id);
+    const removeTdList = () => props.removeTdList(props.id);
 
     //*** JSX ***
     return <div>
-        <h3>{props.title}</h3>
+        <h3>
+            {props.title}
+            <button onClick={removeTdList}>x</button>
+        </h3>
         <div>
             <StyledInput border={error ? "red 1px solid" : ""}
-                   value={newTaskTitle}
-                   onChange={onNewTitleChangeHandler}
-                   onKeyUp={onKeyUpInputHandler}/>
+                         value={newTaskTitle}
+                         onChange={onNewTitleChangeHandler}
+                         onKeyUp={onKeyUpInputHandler}/>
 
             <button onClick={onAddTaskClickBtn}>+</button>
             {error && <StyledRequiredFieldMsgDiv className="error-message">{error}</StyledRequiredFieldMsgDiv>}
         </div>
         <ul>
             {
-                props.tasks.map((t) => {
-                    const onRemoveTaskClickBtn = () => {
-                        props.removeTask(t.id)
-                    }
-                    const onClickCheckBox = () => props.changeStatus(t.id);
-                    return <StyledTaskLi opacity={t.isDone ? "0.5" : ""}>
-                        <input type="checkbox" checked={t.isDone} onChange={onClickCheckBox}/>
-                        <span>{t.title}</span>
-                        <button onClick={onRemoveTaskClickBtn}>x</button>
-                    </StyledTaskLi>
-                })
+                props.tasks.length !== 0 ?
+                    props.tasks.map((t) => {
+                        const onRemoveTaskClickBtn = () => {
+                            props.removeTask(t.id, props.id)
+                        }
+                        const onClickCheckBox = () => props.changeStatus(t.id, props.id);
+                        return <StyledTaskLi opacity={t.isDone ? "0.5" : ""}>
+                            <input type="checkbox" checked={t.isDone} onChange={onClickCheckBox}/>
+                            <span>{t.title}</span>
+                            <button onClick={onRemoveTaskClickBtn}>x</button>
+                        </StyledTaskLi>
+                    }) :
+                    <span>Tasks list is empty</span>
             }
         </ul>
         <div>
-            <StyledFilterBtn bgc={props.filter === "all" ? "aquamarine" : ""} onClick={onClickChangeFilterAll}>All</StyledFilterBtn>
-            <StyledFilterBtn bgc={props.filter === "active" ? "aquamarine" : ""} onClick={onClickChangeFilterActive}>Active</StyledFilterBtn>
-            <StyledFilterBtn bgc={props.filter === "completed" ? "aquamarine" : ""} onClick={onClickChangeFilterCompleted}>Completed</StyledFilterBtn>
+            <StyledFilterBtn bgc={props.filter === "all" ? "aquamarine" : ""}
+                             onClick={onClickChangeFilterAll}>All</StyledFilterBtn>
+            <StyledFilterBtn bgc={props.filter === "active" ? "aquamarine" : ""}
+                             onClick={onClickChangeFilterActive}>Active</StyledFilterBtn>
+            <StyledFilterBtn bgc={props.filter === "completed" ? "aquamarine" : ""}
+                             onClick={onClickChangeFilterCompleted}>Completed</StyledFilterBtn>
         </div>
     </div>
 }
@@ -103,7 +114,7 @@ type StyledFilterBtnType = {
 
 //**************** STYLED COMPONENTS ******************//
 const StyledInput = styled.input<StyledInputType>`
-      border: ${props => props.border};
+  border: ${props => props.border};
 `
 
 const StyledRequiredFieldMsgDiv = styled.div`
