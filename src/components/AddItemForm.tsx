@@ -1,5 +1,7 @@
 import React, {ChangeEvent, KeyboardEvent, useState} from "react";
 import styled from "styled-components";
+import {IconButton, TextField} from "@mui/material";
+import {ControlPoint} from "@mui/icons-material";
 
 type AddTaskFormType = {
     addItem: (newTitle: string) => void;
@@ -39,26 +41,17 @@ export function AddItemForm(props: AddTaskFormType) {
     //*** JSX ***
 
     return <div>
-        <StyledInput border={error ? "red 1px solid" : ""}
-                     value={newTitle}
-                     onChange={onNewTitleChangeHandler}
-                     onKeyUp={onKeyUpInputHandler}/>
+        <TextField
+            variant={"outlined"}
+            label="Type value"
+            error={!!error}
+            value={newTitle}
+            helperText={error}
+            onChange={onNewTitleChangeHandler}
+            onKeyUp={onKeyUpInputHandler}/>
 
-        <button onClick={onAddTaskClickBtn}>+</button>
-        {error && <StyledRequiredFieldMsgDiv className="error-message">{error}</StyledRequiredFieldMsgDiv>}
+        <IconButton color={"primary"} onClick={onAddTaskClickBtn}>
+            <ControlPoint/>
+        </IconButton>
     </div>
 }
-
-//************* STYLED COMPONENTS TYPES ***************//
-type StyledInputType = {
-    border: string;
-}
-
-//**************** STYLED COMPONENTS ******************//
-const StyledInput = styled.input<StyledInputType>`
-  border: ${props => props.border};
-`
-
-const StyledRequiredFieldMsgDiv = styled.div`
-  color: red;
-`

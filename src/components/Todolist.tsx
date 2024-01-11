@@ -3,6 +3,8 @@ import {FilterValuesType} from "../App";
 import styled from "styled-components";
 import {AddItemForm} from "./AddItemForm";
 import {EditableSpan} from "./EditableSpan";
+import {Button, Checkbox, IconButton} from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 //************* COMPONENTS TYPES ***************//
 export type TaskType = {
@@ -45,7 +47,9 @@ export let Todolist = (props: TodolistPropsType) => {
     return <div>
         <h3>
             <EditableSpan title={props.title} onChange={onChangeTdListTitle}/>
-            <button onClick={removeTdList}>x</button>
+            <IconButton aria-label="delete" onClick={removeTdList} size={"small"}>
+                <DeleteIcon />
+            </IconButton>
         </h3>
         <AddItemForm addItem={addTask}/>
         <ul>
@@ -56,21 +60,26 @@ export let Todolist = (props: TodolistPropsType) => {
                         const onClickCheckBox = () => props.changeStatus(t.id, props.id);
                         const onChangeTitleHandler = (newTaskTitle: string) => props.changeTaskTitle(t.id, props.id, newTaskTitle)
                         return <StyledTaskLi opacity={t.isDone ? "0.5" : ""}>
-                            <input type="checkbox" checked={t.isDone} onChange={onClickCheckBox}/>
+                            <Checkbox checked={t.isDone} onChange={onClickCheckBox}/>
                             <EditableSpan title={t.title} onChange={onChangeTitleHandler}/>
-                            <button onClick={onRemoveTaskClickBtn}>x</button>
+                            <IconButton aria-label="delete" onClick={onRemoveTaskClickBtn} size={"small"}>
+                                <DeleteIcon />
+                            </IconButton>
                         </StyledTaskLi>
                     }) :
                     <span>Tasks list is empty</span>
             }
         </ul>
         <div>
-            <StyledFilterBtn bgc={props.filter === "all" ? "aquamarine" : ""}
-                             onClick={onClickChangeFilterAll}>All</StyledFilterBtn>
-            <StyledFilterBtn bgc={props.filter === "active" ? "aquamarine" : ""}
-                             onClick={onClickChangeFilterActive}>Active</StyledFilterBtn>
-            <StyledFilterBtn bgc={props.filter === "completed" ? "aquamarine" : ""}
-                             onClick={onClickChangeFilterCompleted}>Completed</StyledFilterBtn>
+            <Button onClick={onClickChangeFilterAll} color={"inherit"} variant={props.filter === "all" ? "contained" : "text"}>
+                All
+            </Button>
+            <Button onClick={onClickChangeFilterActive} color={"primary"} variant={props.filter === "active" ? "contained" : "text"}>
+                Active
+            </Button>
+            <Button onClick={onClickChangeFilterCompleted} color={"secondary"} variant={props.filter === "completed" ? "contained" : "text"}>
+                Completed
+            </Button>
         </div>
     </div>
 }
@@ -79,16 +88,11 @@ export let Todolist = (props: TodolistPropsType) => {
 type StyledTaskLiType = {
     opacity: string;
 }
-type StyledFilterBtnType = {
-    bgc: string;
-}
+
 
 //**************** STYLED COMPONENTS ******************//
 
 const StyledTaskLi = styled.li<StyledTaskLiType>`
-  opacity: ${props => props.opacity};
-`
-
-const StyledFilterBtn = styled.button<StyledFilterBtnType>`
-  background-color: ${props => props.bgc};
+    opacity: ${props => props.opacity};
+    list-style-type: none;
 `
