@@ -1,5 +1,5 @@
 import {v1} from "uuid";
-import {FilterValuesType, TdListType} from "../App";
+import {FilterValuesType, TdListType} from "../AppWithReducers";
 import {
     addTdListAC, changeTdListFilterAC,
     changeTdListTitleAC,
@@ -7,12 +7,17 @@ import {
     todolistsReducer
 } from "./todolists-reducer";
 
-let tdListId1 = v1();
-let tdListId2 = v1();
-const startState: TdListType[] = [
-    {id: tdListId1, title: "TdList-1", filter: "all"},
-    {id: tdListId2, title: "TdList-2", filter: "all"}
-]
+let tdListId1: string;
+let tdListId2: string;
+let startState: TdListType[];
+beforeEach(() => {
+    tdListId1 = v1();
+    tdListId2 = v1();
+    startState = [
+        {id: tdListId1, title: "TdList-1", filter: "all"},
+        {id: tdListId2, title: "TdList-2", filter: "all"}
+    ]
+})
 
 test('correct todolist should be removed', () => {
     const endState =todolistsReducer(startState, removeTdListAC(tdListId1));

@@ -1,5 +1,5 @@
 import {v1} from "uuid";
-import {FilterValuesType, TasksStateType, TdListType} from "../App";
+import {FilterValuesType, TasksStateType, TdListType} from "../AppWithReducers";
 import {
     addTdListAC, changeTdListFilterAC,
     changeTdListTitleAC,
@@ -9,20 +9,26 @@ import {
 import {useState} from "react";
 import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksReducer} from "./tasks-reducer";
 
-let tdListId1 = v1();
-let tdListId2 = v1();
-const startState = {
-    [tdListId1]: [
-        {id: "1", title: "HTML&CSS", isDone: true},
-        {id: "2", title: "JS", isDone: true},
-        {id: "3", title: "ReactJS", isDone: false},
-        {id: "4", title: "Java", isDone: false}
-    ],
-    [tdListId2]: [
-        {id: "1", title: "Sugar", isDone: true},
-        {id: "2", title: "Apples", isDone: false}
-    ]
-};
+let tdListId1: string;
+let tdListId2: string;
+let startState: TasksStateType
+
+beforeEach(() => {
+    tdListId1 = v1();
+    tdListId2 = v1();
+    startState = {
+        [tdListId1]: [
+            {id: "1", title: "HTML&CSS", isDone: true},
+            {id: "2", title: "JS", isDone: true},
+            {id: "3", title: "ReactJS", isDone: false},
+            {id: "4", title: "Java", isDone: false}
+        ],
+        [tdListId2]: [
+            {id: "1", title: "Sugar", isDone: true},
+            {id: "2", title: "Apples", isDone: false}
+        ]
+    };
+})
 
 test('correct task should be removed', () => {
     const endState =tasksReducer(startState, removeTaskAC("3", tdListId1));
@@ -41,7 +47,7 @@ test('correct task should be added', () => {
 })
 
 test('correct task should changed its status', () => {
-    const endState =tasksReducer(startState, changeTaskStatusAC("2", tdListId2));
+    const endState =tasksReducer(startState, changeTaskStatusAC("2", false, tdListId2));
 
     expect(endState[tdListId1].length).toBe(4);
     expect(endState[tdListId2].length).toBe(2);

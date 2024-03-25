@@ -1,5 +1,5 @@
 import React from "react";
-import {FilterValuesType} from "../App";
+import {FilterValuesType} from "../AppWithReducers";
 import styled from "styled-components";
 import {AddItemForm} from "./AddItemForm";
 import {EditableSpan} from "./EditableSpan";
@@ -19,7 +19,7 @@ type TodolistPropsType = {
     removeTask: (id: string, tlId: string) => void; // эта функция является колбэком и пробрасывается от родителя чтобы вызвать ее отсюда и там изменить состояние
     changeFilter: (value: FilterValuesType, tdListId: string) => void; // эта функция является колбэком и пробрасывается от родителя чтобы вызвать ее отсюда и там изменить состояние
     addTask: (newTitle: string, tlId: string) => void;
-    changeStatus: (id: string, tlId: string) => void;
+    changeStatus: (id: string, isDone: boolean, tlId: string) => void;
     changeTaskTitle: (id: string, tlId: string, newTitle: string) => void;
     changeTdListTitle: (tlId: string, newTitle: string) => void;
     removeTdList: (tlId: string) => void;
@@ -57,9 +57,9 @@ export let Todolist = (props: TodolistPropsType) => {
                 props.tasks.length !== 0 ?
                     props.tasks.map((t) => {
                         const onRemoveTaskClickBtn = () => props.removeTask(t.id, props.id);
-                        const onClickCheckBox = () => props.changeStatus(t.id, props.id);
+                        const onClickCheckBox = () => props.changeStatus(t.id, t.isDone, props.id);
                         const onChangeTitleHandler = (newTaskTitle: string) => props.changeTaskTitle(t.id, props.id, newTaskTitle)
-                        return <StyledTaskLi opacity={t.isDone ? "0.5" : ""}>
+                        return <StyledTaskLi opacity={t.isDone ? "0.5" : ""} key={t.id}>
                             <Checkbox checked={t.isDone} onChange={onClickCheckBox}/>
                             <EditableSpan title={t.title} onChange={onChangeTitleHandler}/>
                             <IconButton aria-label="delete" onClick={onRemoveTaskClickBtn} size={"small"}>

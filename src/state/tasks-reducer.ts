@@ -1,6 +1,6 @@
-import {FilterValuesType, TasksStateType, TdListType} from "../App";
+import {FilterValuesType, TasksStateType, TdListType} from "../AppWithReducers";
 import {v1} from "uuid";
-import {AddTdListActionType, RemoveTdListActionType} from "./todolists-reducer";
+import {AddTdListActionType, RemoveTdListActionType, tdListId1, tdListId2} from "./todolists-reducer";
 
 export type RemoveTaskActionType = {
     type: 'REMOVE_TASK',
@@ -15,6 +15,7 @@ export type AddTaskActionType = {
 export type ChangeTaskStatusActionType = {
     type: 'CHANGE_TASK_STATUS',
     taskId: string,
+    isDone: boolean,
     tdListId: string
 }
 export type ChangeTaskTitleActionType = {
@@ -27,7 +28,19 @@ export type ChangeTaskTitleActionType = {
 type ActionTypes = RemoveTaskActionType | AddTaskActionType | ChangeTaskStatusActionType | ChangeTaskTitleActionType |
     AddTdListActionType | RemoveTdListActionType;
 
-export const tasksReducer = (state: TasksStateType, action: ActionTypes): TasksStateType => {
+const initState: TasksStateType = {
+    [tdListId1]: [
+        {id: v1(), title: "HTML&CSS", isDone: true},
+        {id: v1(), title: "JS", isDone: true},
+        {id: v1(), title: "ReactJS", isDone: false},
+        {id: v1(), title: "Java", isDone: false}
+    ],
+    [tdListId2]: [
+        {id: v1(), title: "Sugar", isDone: true},
+        {id: v1(), title: "Apples", isDone: false}
+    ]
+};
+export const tasksReducer = (state: TasksStateType = initState, action: ActionTypes): TasksStateType => {
     const copyState = {...state};
     switch (action.type) {
         case 'REMOVE_TASK': {
@@ -42,7 +55,7 @@ export const tasksReducer = (state: TasksStateType, action: ActionTypes): TasksS
         case 'CHANGE_TASK_STATUS': {
             let task = copyState[action.tdListId].find(t => t.id === action.taskId);
             if (task) {
-                task.isDone = !task.isDone;
+                task.isDone = !action.isDone;
             }
             return {...copyState};
         }
@@ -62,7 +75,7 @@ export const tasksReducer = (state: TasksStateType, action: ActionTypes): TasksS
             return copyState;
         }
         default:
-            throw new Error("")
+            return state;
     }
 }
 
@@ -81,10 +94,11 @@ export const addTaskAC = (title: string, tdListId: string): AddTaskActionType =>
         tdListId
     }
 }
-export const changeTaskStatusAC = (taskId: string, tdListId: string): ChangeTaskStatusActionType => {
+export const changeTaskStatusAC = (taskId: string, isDone: boolean, tdListId: string): ChangeTaskStatusActionType => {
     return {
         type: "CHANGE_TASK_STATUS",
         taskId,
+        isDone,
         tdListId
     }
 }
